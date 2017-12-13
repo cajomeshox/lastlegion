@@ -15,11 +15,11 @@ $userId 	= $client->parseEvents()[0]['source']['userId'];
 $replyToken = $client->parseEvents()[0]['replyToken'];
 $message 	= $client->parseEvents()[0]['message'];
 $profil = $client->profil($userId);
-$pesan_datang = $message['text'];
+$message_recieved = $message['text'];
 
 if($message['type']=='sticker')
 {	
-	$balas = array(
+	$reply = array(
 							'UserID' => $profil->userId,	
                                                         'replyToken' => $replyToken,							
 							'messages' => array(
@@ -33,17 +33,17 @@ if($message['type']=='sticker')
 						
 }
 else
-$pesan=str_replace(" ", "%20", $pesan_datang);
+$message=str_replace(" ", "%20", $message_recieved);
 $key = '9e2f8795-8ea7-4602-b88b-33d6dd528296'; //API SimSimi
-$url = 'http://sandbox.api.simsimi.com/request.p?key='.$key.'&lc=id&ft=1.0&text='.$pesan;
+$url = 'http://sandbox.api.simsimi.com/request.p?key='.$key.'&lc=id&ft=1.0&text='.$message;
 $json_data = file_get_contents($url);
 $url=json_decode($json_data,1);
-$diterima = $url['response'];
+$recieved = $url['response'];
 if($message['type']=='text')
 {
 if($url['result'] == 404)
 	{
-		$balas = array(
+		$reply = array(
 							'UserID' => $profil->userId,	
                                                         'replyToken' => $replyToken,													
 							'messages' => array(
@@ -60,7 +60,7 @@ if($url['result'] != 100)
 	{
 		
 		
-		$balas = array(
+		$reply = array(
 							'UserID' => $profil->userId,
                                                         'replyToken' => $replyToken,														
 							'messages' => array(
@@ -73,7 +73,7 @@ if($url['result'] != 100)
 				
 	}
 	else{
-		$balas = array(
+		$reply = array(
 							'UserID' => $profil->userId,
                                                         'replyToken' => $replyToken,														
 							'messages' => array(
@@ -92,4 +92,4 @@ $result =  json_encode($balas);
 file_put_contents('./reply.json',$result);
 
 
-$client->replyMessage($balas);
+$client->replyMessage($reply);
